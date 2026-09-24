@@ -1,46 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Technology Cost Intelligence</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Technology Cost Intelligence — MVP</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#68738a;--line:#e5e9f2;--accent:#3457d5;--soft:#eef2ff;--green:#16865c;--red:#bd3b3b}*{box-sizing:border-box}body{margin:0;font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}header{height:64px;background:#172033;color:#fff;display:flex;align-items:center;padding:0 28px;justify-content:space-between}header b{font-size:17px}.pill{font-size:12px;background:#2a3650;padding:5px 9px;border-radius:20px;color:#dce3f2}.wrap{max-width:1240px;margin:auto;padding:24px}.filters,.grid,.stats{display:grid;gap:14px}.filters{grid-template-columns:1fr 1fr 1fr auto;margin-bottom:18px}.grid{grid-template-columns:1.15fr .85fr}.stats{grid-template-columns:repeat(3,1fr);margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 2px 8px #18223a0a}.stat strong{font-size:25px;display:block;margin-top:5px}.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}select,button{border:1px solid var(--line);background:white;border-radius:9px;padding:10px 12px;color:var(--ink);width:100%}button{background:var(--accent);color:white;border:0;cursor:pointer;width:auto}.filter label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.barrow{display:grid;grid-template-columns:105px 1fr 88px;align-items:center;gap:10px;margin:13px 0}.track{height:11px;background:#edf0f5;border-radius:10px;overflow:hidden}.bar{height:100%;background:var(--accent);border-radius:10px}.money{text-align:right;font-variant-numeric:tabular-nums}.clickable{cursor:pointer}.clickable:hover{font-weight:600}.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.title h2{font-size:16px;margin:0}.title span{color:var(--muted);font-size:12px}table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--muted)}td:last-child,th:last-child{text-align:right}.scenario{margin-top:18px}.scenario-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.scenario button{width:100%;background:#fff;color:var(--ink);border:1px solid var(--line)}.scenario button.active{background:var(--soft);color:var(--accent);border-color:#b8c3ff}.saving{font-size:22px;font-weight:700;color:var(--green)}.note{margin-top:14px;padding:11px;background:#fff9e8;border:1px solid #f3e4ae;border-radius:9px;color:#6e5b22;font-size:12px}@media(max-width:800px){.filters,.grid,.stats,.scenario-grid{grid-template-columns:1fr}.filters button{width:100%}}
+</style>
 </head>
-<body>
-  <main class="app">
-    <header>
-      <div>
-        <p class="eyebrow">MVP PROTOTYPE · FAKE DATA</p>
-        <h1>Technology Cost Intelligence</h1>
-        <p class="subtitle">Understand technology cost ownership across SPIs.</p>
-      </div>
-      <div class="total-card">
-        <span>Total annual cost</span>
-        <strong id="grand-total">€0</strong>
-      </div>
-    </header>
-
-    <section class="controls">
-      <button class="tab active" data-view="technology">Technology View</button>
-      <button class="tab" data-view="spi">SPI View</button>
-    </section>
-
-    <section id="technology-view">
-      <div class="section-heading">
-        <div><h2>Technology cost overview</h2><p>Click a technology to see which SPIs consume its cost.</p></div>
-      </div>
-      <div id="technology-cards" class="grid"></div>
-      <div id="technology-detail" class="detail hidden"></div>
-    </section>
-
-    <section id="spi-view" class="hidden">
-      <div class="section-heading">
-        <div><h2>SPI cost view</h2><p>Select an SPI to see its technology cost ownership.</p></div>
-        <select id="spi-select"></select>
-      </div>
-      <div id="spi-detail" class="detail"></div>
-    </section>
-  </main>
-  <script src="app.js"></script>
-</body>
-</html>
+<body><header><b>Technology Cost Intelligence</b><span class="pill">MVP · Fake data</span></header>
+<div class="wrap">
+  <div class="filters">
+    <div class="filter"><label>Technology</label><select id="techFilter"><option value="all">All technologies</option></select></div>
+    <div class="filter"><label>SPI</label><select id="spiFilter"><option value="all">All SPIs</option></select></div>
+    <div class="filter"><label>View</label><select id="view"><option value="tech">Technology → SPI</option><option value="spi">SPI → Technology</option></select></div>
+    <div style="align-self:end"><button onclick="resetFilters()">Reset</button></div>
+  </div>
+  <div class="stats">
+    <div class="card stat"><span class="label">Total annual cost</span><strong id="total">€0</strong></div>
+    <div class="card stat"><span class="label">Largest cost driver</span><strong id="driver">—</strong></div>
+    <div class="card stat"><span class="label">Selected scope</span><strong id="scope">All</strong></div>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="title"><h2 id="chartTitle">Cost by technology</h2><span>Click a row to drill down</span></div><div id="bars"></div></div>
+    <div class="card"><div class="title"><h2 id="detailTitle">Cost breakdown</h2><span>Annual</span></div><table><thead><tr><th id="colHead">SPI</th><th>Allocation</th><th>Cost</th></tr></thead><tbody id="detail"></tbody></table></div>
+  </div>
+  <div class="card scenario"><div class="title"><h2>What-if scenario</h2><span>Simple prototype assumptions</span></div>
+    <div class="scenario-grid"><button class="active" data-s="retain">Retain</button><button data-s="replatform">Replatform</button><button data-s="sunset">Sunset</button></div>
+    <p id="scenarioText">Retain keeps the selected scope unchanged.</p><div>Estimated annual saving: <span class="saving" id="saving">€0</span></div>
+    <div class="note">Prototype assumption: replatform saves 30% of the selected cost; sunset saves 100%. Allocation is fake and proportional for demonstration only.</div>
+  </div>
+</div>
+<script>
+const techs=['VMWare','Illumio','Oracle','MongoDB','SQL','SAN','RedHat','Commvault'];
+const spis=['F9IN','BJPK','QIQI','PKBO','XQV0'];
+const matrix={
+VMWare:[420000,310000,245000,195000,160000],Illumio:[160000,120000,90000,76000,54000],Oracle:[280000,210000,170000,125000,95000],MongoDB:[95000,130000,110000,70000,85000],SQL:[180000,150000,125000,105000,90000],SAN:[135000,100000,80000,70000,60000],RedHat:[145000,125000,105000,95000,75000],Commvault:[100000,85000,70000,55000,45000]};
+let selectedScenario='retain';
+const euro=n=>'€'+Math.round(n).toLocaleString('en-US');
+const tf=document.querySelector('#techFilter'),sf=document.querySelector('#spiFilter'),vf=document.querySelector('#view');
+techs.forEach(x=>tf.add(new Option(x,x)));spis.forEach(x=>sf.add(new Option(x,x)));
+function rows(){let out=[];techs.forEach((t,ti)=>spis.forEach((s,si)=>out.push({t,s,c:matrix[t][si]})));return out.filter(r=>(tf.value==='all'||r.t===tf.value)&&(sf.value==='all'||r.s===sf.value));}
+function aggregate(key){const m={};rows().forEach(r=>m[r[key]]=(m[r[key]]||0)+r.c);return m}
+function render(){const rs=rows(),sum=rs.reduce((a,b)=>a+b.c,0);total.textContent=euro(sum);scope.textContent=tf.value!=='all'?tf.value:sf.value!=='all'?sf.value:'All';
+ const primary=vf.value==='tech'?'t':'s', secondary=primary==='t'?'s':'t', agg=aggregate(primary), entries=Object.entries(agg).sort((a,b)=>b[1]-a[1]), max=entries[0]?.[1]||1;driver.textContent=entries[0]?.[0]||'—';chartTitle.textContent=primary==='t'?'Cost by technology':'Cost by SPI';colHead.textContent=secondary==='s'?'SPI':'Technology';
+ bars.innerHTML=entries.map(([k,v])=>`<div class="barrow clickable" onclick="drill('${k}')"><span>${k}</span><div class="track"><div class="bar" style="width:${v/max*100}%"></div></div><span class="money">${euro(v)}</span></div>`).join('');
+ let chosen=primary==='t'?(tf.value!=='all'?tf.value:entries[0]?.[0]):(sf.value!=='all'?sf.value:entries[0]?.[0]);detailTitle.textContent=chosen?`${chosen} breakdown`:'Cost breakdown';let dr=rs.filter(r=>r[primary]===chosen), dsum=dr.reduce((a,b)=>a+b.c,0);detail.innerHTML=dr.sort((a,b)=>b.c-a.c).map(r=>`<tr><td>${r[secondary]}</td><td>${dsum?Math.round(r.c/dsum*100):0}%</td><td>${euro(r.c)}</td></tr>`).join('');renderScenario(sum)}
+function drill(k){if(vf.value==='tech')tf.value=k;else sf.value=k;render()}
+function renderScenario(sum){let rate=selectedScenario==='retain'?0:selectedScenario==='replatform'?.3:1;saving.textContent=euro(sum*rate);scenarioText.textContent=selectedScenario==='retain'?'Retain keeps the selected scope unchanged.':selectedScenario==='replatform'?'Replatform models a 30% reduction in the selected scope.':'Sunset models removal of the selected scope and its allocated cost.'}
+function resetFilters(){tf.value='all';sf.value='all';vf.value='tech';selectedScenario='retain';document.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('active',b.dataset.s==='retain'));render()}
+[tf,sf,vf].forEach(x=>x.addEventListener('change',render));document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{selectedScenario=b.dataset.s;document.querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('active',x===b));render()});render();
+</script></body></html>
