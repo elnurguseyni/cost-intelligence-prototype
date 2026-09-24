@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technology Cost Intelligence</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <p class="eyebrow">MVP PROTOTYPE · FAKE DATA</p>
+        <h1>Technology Cost Intelligence</h1>
+        <p class="subtitle">Understand technology cost ownership across SPIs.</p>
+      </div>
+      <div class="total-card">
+        <span>Total annual cost</span>
+        <strong id="grand-total">€0</strong>
+      </div>
+    </header>
+
+    <section class="controls">
+      <button class="tab active" data-view="technology">Technology View</button>
+      <button class="tab" data-view="spi">SPI View</button>
+    </section>
+
+    <section id="technology-view">
+      <div class="section-heading">
+        <div><h2>Technology cost overview</h2><p>Click a technology to see which SPIs consume its cost.</p></div>
+      </div>
+      <div id="technology-cards" class="grid"></div>
+      <div id="technology-detail" class="detail hidden"></div>
+    </section>
+
+    <section id="spi-view" class="hidden">
+      <div class="section-heading">
+        <div><h2>SPI cost view</h2><p>Select an SPI to see its technology cost ownership.</p></div>
+        <select id="spi-select"></select>
+      </div>
+      <div id="spi-detail" class="detail"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
